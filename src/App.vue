@@ -35,17 +35,18 @@ export default {
   },
 
   methods: {
-    created() {
-      Event.$on('win', winner => this.wins[winner]++);
-    },
-
+    
     restart() {
       Event.$emit('clearCell');
       Event.$emit('gridReset');
 
       this.matches++;
     }
-  }
+  },
+
+  created() {
+      Event.$on('win', winner => this.wins[winner]++);
+    },
 }
 </script>
 

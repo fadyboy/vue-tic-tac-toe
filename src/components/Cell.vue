@@ -22,16 +22,16 @@
                     // fires an event to notify the grid/board that a mark has been placed
                     Event.$emit('strike', this.name);
                 }
-            },
+            }
+        },
 
-            created(){
+        created(){
                 Event.$on('freeze', () => this.frozen = true);
                 Event.$on('clearCell', () => {
                     this.mark = '';
                     this.frozen = false;
                 });
             }
-        }
     }
 </script>
 

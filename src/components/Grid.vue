@@ -50,14 +50,74 @@ export default {
           // win conditions contain all possible win conditions
           winConditions: [
               [1, 2, 3], [4, 5, 6], [7, 8, 9], // rows
-              [1, 4, 7], [2, 5, 6], [3, 6, 9], // columns
+              [1, 4, 7], [2, 5, 8], [3, 6, 9], // columns
               [1, 5, 9], [3, 5, 7] // diagonals
           ]
       }
   },
 
   methods: {
-      created(){
+
+      changePlayer(){
+          // changes the active player to a non-active player
+          this.activePlayer = this.nonActivePlayer;
+      },
+
+      changeGameStatus(){
+          if(this.checkForWin()){
+              return this.gameIsWon();
+              // check if game is not won and all cells are filled
+          } else {
+              if(this.moves === 9){
+                  return 'draw';
+              }
+          }
+
+          return `${this.activePlayer}`;
+      },
+
+      checkForWin(){
+          for(let i = 0; i < this.winConditions.length; i ++){
+                let wc = this.winConditions[i];
+                let cells = this.cells;
+
+                // compare 3 cell values based on the cells in condition
+                if(this.areEqual(cells[wc[0]], cells[wc[1]], cells[wc[2]])){
+                    return true;
+                }
+          }
+          return false;
+      },
+
+      areEqual(){
+          // helper function to compare cell values
+          var len = arguments.length;
+
+          // loop through each cell value and compare with emptry string or inequality
+          for(var i = 1; i < len; i ++){
+
+              if(arguments[i] === '' || arguments[i] !== arguments[i-1]){
+                 return false;
+              }
+          }
+          return true;
+      },
+
+      gameIsWon(){
+          // fires event for App component to change score
+          Event.$emit('win', this.activePlayer);
+
+          // set the gameStatus message
+          this.gameStatusMessage = `${this.activePlayer} wins!`;
+
+          // fire event for cell to freeze
+          Event.$emit('freeze');
+
+          return 'win';
+      }
+  },
+
+  created(){
 
           // listens for a strike made by player on cell
           // called by the cell component
@@ -80,64 +140,6 @@ export default {
           });
       },
 
-      changePlayer(){
-          // changes the active player to a non-active player
-          this.activePlayer = this.nonActivePlayer;
-      },
-
-      changeGameStatus(){
-          if(this.checkForWin){
-              return this.gameIsWon();
-              // check if game is not won and all cells are filled
-          } else {
-              if(this.moves === 9){
-                  return 'draw';
-              }
-          }
-
-          return `${this.activePlayer}'s turn`;
-      },
-
-      checkForWin(){
-          for(let i = 0; i < this.winConditions.length; i ++){
-                let wc = this.winConditions[i];
-                let cells = this.cells;
-
-                // compare 3 cell values based on the cells in condition
-                if(this.areEqual(cells[wc[0]], cells[wc[1]], cells[wc[2]])){
-                    return true;
-                }
-          }
-          return false;
-      },
-
-      areEqual(){
-          // helper function to compare cell values
-          var len = arguments.length;
-
-          // loop through each cell value and compare with emptry string or inequality
-          for(var i = 0; i < len; i ++){
-              if(arguments[i] === '' || arguments[i] !== arguments[i - 1]){
-                 return false;
-              }
-          }
-          return true;
-      },
-
-      gameIsWon(){
-          // fires event for App component to change score
-          Event.$emit('win', this.activePlayer);
-
-          // set the gameStatus message
-          this.gameStatusMessage = `${this.activePlayer} + ' wins!'`;
-
-          // fire event for cell to freeze
-          Event.$emit('freeze');
-
-          return 'win';
-      }
-  },
-
   computed: {
       // helper property to get the non-active player
       nonActivePlayer(){
@@ -155,8 +157,7 @@ export default {
           if(this.gameStatus === 'win'){
               this.gameStatusColor = 'statusWin';
               return;
-            //   this.gameStatusMessage = `${this.activePlayer} + 'wins!'`;
-            //   return;
+            
           } else if (this.gameStatus === 'draw'){
               this.gameStatusColor = 'statusDraw';
               this.gameStatusMessage = 'Draw!';
