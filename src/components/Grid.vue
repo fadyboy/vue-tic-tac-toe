@@ -25,7 +25,7 @@
     
 </template>
 
-<<script>
+<script>
 import Cell from './Cell.vue';
 
 export default {
